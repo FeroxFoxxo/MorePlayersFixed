@@ -56,12 +56,21 @@
                 {
                     Debug.Log("Trying to join room: " + ___RoomName);
                     
-                    PhotonNetwork.JoinOrCreateRoom(___RoomName, new RoomOptions
+                    Hashtable hashtable = new Hashtable();
+                    hashtable.Add("PASSWORD", DataDirector.instance.networkPassword);
+                    PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
+                    
+                    RoomOptions roomOptions = new RoomOptions
                     {
                         MaxPlayers = configMaxPlayers.Value,
                         IsVisible = false
-                    }, TypedLobby.Default);
+                    };
 
+                    Hashtable hashtable2 = new Hashtable();
+                    hashtable2.Add("PASSWORD", DataDirector.instance.networkPassword);
+                    roomOptions.CustomRoomProperties = hashtable2;
+                    PhotonNetwork.JoinOrCreateRoom(___RoomName, roomOptions, TypedLobby.Default);
+                    
                     return false;
                 }
                 else
