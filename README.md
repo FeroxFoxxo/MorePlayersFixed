@@ -1,7 +1,7 @@
 # More Players Fixed
 [![GitHub](https://img.shields.io/badge/GitHub-MorePlayersFixed-brightgreen?style=for-the-badge&logo=GitHub)](https://github.com/FeroxFoxxo/MorePlayersFixed)
-[![Thunderstore Version](https://img.shields.io/thunderstore/v/FeroxFoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/FeroxFoxxo/MorePlayersFixed)
-[![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/FeroxFoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/FeroxFoxxo/MorePlayersFixed)
+[![Thunderstore Version](https://img.shields.io/thunderstore/v/feroxfoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/feroxfoxxo/MorePlayersFixed)
+[![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/feroxfoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/feroxfoxxo/MorePlayersFixed)
 
 Are you tired of not being able to change the max player count in R.E.P.O.? Well BOY do I have something for you!
 - MorePlayersFixed is a mod for R.E.P.O. that allows you to decrease or increase the max player cap.
