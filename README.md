@@ -6,7 +6,7 @@ If you want to help with this mod at all - especially **balancing the game** as 
 
 Are you tired of not being able to change the max player count in R.E.P.O.? Well BOY do I have something for you!
 
-- MorePlayers is a mod for R.E.P.O. that allows you to decrease or increase the max player cap.
+- MorePlayersFixed is a mod for R.E.P.O. that allows you to decrease or increase the max player cap.
 
 ## How do you change the max players cap?
 
