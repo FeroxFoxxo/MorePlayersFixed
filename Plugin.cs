@@ -46,38 +46,43 @@
         {
             static bool Prefix(ref string ___RoomName)
             {
+                if(string.IsNullOrEmpty(___RoomName))
+                {
+                    mls.LogError("RoomName is null or empty, using previous method!");
+                    return true;
+                }
+                
                 if(configMaxPlayers.Value == 0)
                 {
                     mls.LogError("The MaxPlayers config is null or empty, using previous method!");
                     return true;
                 }
 
-                if(NetworkConnect.instance != null)
-                {
-                    Debug.Log("Trying to join room: " + ___RoomName);
-                    
-                    Hashtable hashtable = new Hashtable();
-                    hashtable.Add("PASSWORD", DataDirector.instance.networkPassword);
-                    PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
-                    
-                    RoomOptions roomOptions = new RoomOptions
-                    {
-                        MaxPlayers = configMaxPlayers.Value,
-                        IsVisible = false
-                    };
-
-                    Hashtable hashtable2 = new Hashtable();
-                    hashtable2.Add("PASSWORD", DataDirector.instance.networkPassword);
-                    roomOptions.CustomRoomProperties = hashtable2;
-                    PhotonNetwork.JoinOrCreateRoom(___RoomName, roomOptions, TypedLobby.Default);
-                    
-                    return false;
-                }
-                else
+                if(NetworkConnect.instance == null)
                 {
                     mls.LogError("NetworkConnect instance is null, using previous method!");
                     return true;
                 }
+
+                Debug.Log("Trying to join room: " + ___RoomName);
+                
+                Hashtable hashtable = new Hashtable();
+                hashtable.Add("PASSWORD", DataDirector.instance.networkPassword);
+                PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
+                
+                RoomOptions roomOptions = new RoomOptions
+                {
+                    MaxPlayers = configMaxPlayers.Value,
+                    IsVisible = false
+                };
+                
+                Hashtable hashtable2 = new Hashtable();
+                hashtable2.Add("PASSWORD", DataDirector.instance.networkPassword);
+                roomOptions.CustomRoomProperties = hashtable2;
+                
+                PhotonNetwork.JoinOrCreateRoom(___RoomName, roomOptions, TypedLobby.Default);
+                    
+                return false;
             }
         }
 
