@@ -71,7 +71,7 @@
                 PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
                 RoomOptions roomOptions = new RoomOptions
                 {
-                    MaxPlayers = 6,
+                    MaxPlayers = configMaxPlayers.Value,
                     IsVisible = false
                 };
                 Hashtable hashtable2 = new Hashtable();
