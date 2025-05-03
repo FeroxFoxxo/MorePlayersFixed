@@ -10,13 +10,14 @@
     using Steamworks;
     using UnityEngine;
     using ExitGames.Client.Photon;
+    using System.Threading.Tasks;
 
     [BepInPlugin(modGUID, modName, modVersion)]
     public class Plugin : BaseUnityPlugin
     {
         public const string modGUID = "feroxfoxxo.MorePlayersFixed";
         public const string modName = "MorePlayersFixed";
-        public const string modVersion = "1.0.3";
+        public const string modVersion = "1.0.4";
 
         private readonly Harmony harmony = new(modGUID);
 
@@ -44,7 +45,9 @@
         [HarmonyPatch(typeof(NetworkConnect), "TryJoiningRoom")]
         public class TryJoiningRoomPatch
         {
-            static string GetNetworkPassword() => (string)Traverse.Create(DataDirector.instance).Field("networkPassword").GetValue();
+            const string NetworkPasswordVariable = "networkPassword";
+
+            static string GetNetworkPassword() => (string)Traverse.Create(DataDirector.instance).Field(NetworkPasswordVariable).GetValue();
 
             static bool Prefix(string ___RoomName)
             {
@@ -54,13 +57,18 @@
                     return true;
                 }
 
-                Debug.Log($"MorePlayersFixed: Attempting to join a lobby with the name '{___RoomName}' and password '{GetNetworkPassword()}'.");
-
-                TryJoiningRoomInternal(___RoomName);
-
-                Debug.Log($"MorePlayersFixed: Joined lobby!");
+                TryJoiningRoomWrapper(___RoomName);
 
                 return false;
+            }
+
+            static void TryJoiningRoomWrapper(string RoomName)
+            {
+                Debug.Log($"MorePlayersFixed: Attempting to join a lobby with the name '{RoomName}' and password '{GetNetworkPassword()}'.");
+
+                TryJoiningRoomInternal(RoomName);
+
+                Debug.Log($"MorePlayersFixed: Joined lobby!");
             }
 
             static void TryJoiningRoomInternal(string RoomName)
@@ -84,8 +92,10 @@
         [HarmonyPatch(typeof(SteamManager), nameof(SteamManager.HostLobby))]
         public class HostLobbyPatch
         {
-            static bool GetPrivateLobby(SteamManager instance) => (bool)Traverse.Create(instance).Field("privateLobby").GetValue();
-            static void SetPrivateLobby(SteamManager instance, bool isPrivate) => Traverse.Create(instance).Field("privateLobby").SetValue(isPrivate);
+            const string PrivateLobbyVariable = "privateLobby";
+
+            static bool GetPrivateLobby(SteamManager instance) => (bool)Traverse.Create(instance).Field(PrivateLobbyVariable).GetValue();
+            static void SetPrivateLobby(SteamManager instance, bool isPrivate) => Traverse.Create(instance).Field(PrivateLobbyVariable).SetValue(isPrivate);
 
             static bool Prefix(bool _open, SteamManager __instance)
             {
@@ -95,16 +105,21 @@
                     return true;
                 }
 
-                Debug.Log($"MorePlayersFixed: Hosting an '{(_open ? "open" : "unopen")}' lobby for '{configMaxPlayers.Value}' players.");
-
-                HostLobbyInternal(_open, __instance);
-
-                Debug.Log($"MorePlayersFixed: Started the {(GetPrivateLobby(__instance) ? "private" : "public")} lobby.");
+                HostLobbyWrapper(_open, __instance);
 
                 return false;
             }
 
-            static async void HostLobbyInternal(bool _open, SteamManager __instance)
+            static async void HostLobbyWrapper(bool _open, SteamManager __instance)
+            {
+                Debug.Log($"MorePlayersFixed: Hosting an '{(_open ? "open" : "unopen")}' lobby for '{configMaxPlayers.Value}' players.");
+
+                await HostLobbyInternal(_open, __instance);
+
+                Debug.Log($"MorePlayersFixed: Started the {(GetPrivateLobby(__instance) ? "private" : "public")} lobby.");
+            }
+
+            static async Task HostLobbyInternal(bool _open, SteamManager __instance)
             {
                 Debug.Log("Steam: Hosting lobby...");
                 Lobby? lobby = await SteamMatchmaking.CreateLobbyAsync(configMaxPlayers.Value);

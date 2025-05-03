@@ -1,6 +1,6 @@
 {
   "name": "MorePlayersFixed",
-  "version_number": "1.0.3",
+  "version_number": "1.0.4",
   "website_url": "https://github.com/FeroxFoxxo/MorePlayersFixed",
   "description": "Made for the latest R.E.P.O beta! Allows you to decrease or increase the max player cap.",
   "dependencies": [

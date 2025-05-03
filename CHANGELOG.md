@@ -1,6 +1,13 @@
 ## Releases
 
 <details>
+    <summary><b>1.0.4</b></summary>
+    <ul>
+        <li>Wait for room creation before reporting lobby open.</li>
+    </ul>
+</details>
+
+<details>
     <summary><b>1.0.3</b></summary>
     <ul>
         <li>Fixed issue with config file not being applied on join.</li>
