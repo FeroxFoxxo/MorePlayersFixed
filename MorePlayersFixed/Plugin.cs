@@ -19,7 +19,7 @@
     {
         public const string modGUID = "feroxfoxxo.MorePlayersFixed";
         public const string modName = "MorePlayersFixed";
-        public const string modVersion = "1.0.0";
+        public const string modVersion = "1.0.2";
 
         private readonly Harmony harmony = new(modGUID);
 
@@ -47,7 +47,7 @@
         [HarmonyPatch(typeof(NetworkConnect), "TryJoiningRoom")]
         public class TryJoiningRoomPatch
         {
-            static bool Prefix(ref string ___RoomName)
+            static bool Prefix(string ___RoomName)
             {
                 if (string.IsNullOrEmpty(___RoomName))
                 {
@@ -61,62 +61,37 @@
                     return true;
                 }
 
-                TryJoiningRoomInternal(ref ___RoomName);
+                Debug.Log($"MorePlayersFixed: Attempting to join a lobby with the name '{___RoomName}'.");
 
-                Debug.Log($"MorePlayersFixed: Joined a lobby that has a maximum of {configMaxPlayers.Value} players.");
+                TryJoiningRoomInternal(___RoomName);
+
+                Debug.Log($"MorePlayersFixed: Joined lobby '{___RoomName}' with a maximum player count of '{configMaxPlayers.Value}'.");
 
                 return false;
             }
 
-            static void TryJoiningRoomInternal(ref string ___RoomName)
+            static void TryJoiningRoomInternal(string RoomName)
             {
-                Debug.Log("Trying to join room: " + ___RoomName);
-
-                Hashtable hashtable = new()
-                {
-                    { "PASSWORD", GetNetworkPassword() }
-                };
-
+                Debug.Log("Trying to join room: " + RoomName);
+                Hashtable hashtable = new Hashtable();
+                hashtable.Add("PASSWORD", Traverse.Create(DataDirector.instance).Field("networkPassword").GetValue());
                 PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
-
-                RoomOptions roomOptions = new()
+                RoomOptions roomOptions = new RoomOptions
                 {
                     MaxPlayers = configMaxPlayers.Value,
                     IsVisible = false
                 };
-
-                Hashtable hashtable2 = new()
-                {
-                    { "PASSWORD", GetNetworkPassword() }
-                };
-
+                Hashtable hashtable2 = new Hashtable();
+                hashtable2.Add("PASSWORD", Traverse.Create(DataDirector.instance).Field("networkPassword").GetValue());
                 roomOptions.CustomRoomProperties = hashtable2;
-
-                PhotonNetwork.JoinOrCreateRoom(___RoomName, roomOptions, TypedLobby.Default);
-            }
-
-            static string GetNetworkPassword()
-            {
-                DataDirector instance = DataDirector.instance;
-                const string fieldName = "networkPassword";
-
-                Type type = instance.GetType();
-
-                FieldInfo fieldInfo = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (fieldInfo != null)
-                {
-                    return (string)fieldInfo.GetValue(instance);
-                }
-
-                throw new MissingMemberException("Could not find internal member 'networkPassword'");
+                PhotonNetwork.JoinOrCreateRoom(RoomName, roomOptions, TypedLobby.Default);
             }
         }
 
-        [HarmonyPatch(typeof(SteamManager), "HostLobby")]
+        [HarmonyPatch(typeof(SteamManager), nameof(SteamManager.HostLobby))]
         public class HostLobbyPatch
         {
-            static bool Prefix(ref bool ___privateLobby, bool _open)
+            static bool Prefix(bool _open, ref bool ___privateLobby)
             {
                 if (configMaxPlayers.Value == 0)
                 {
@@ -124,35 +99,35 @@
                     return true;
                 }
 
-                ___privateLobby = HostLobbyInternal(_open).GetAwaiter().GetResult();
+                Debug.Log($"MorePlayersFixed: Hosting an '{(_open ? "open" : "unopen")}' lobby for '{configMaxPlayers.Value}' players.");
 
-                Debug.Log($"MorePlayersFixed: Hosting {(___privateLobby ? "private" : "public")} lobby for a maximum of {configMaxPlayers.Value} players.");
+                HostLobbyInternal(_open, ref ___privateLobby);
+
+                Debug.Log($"MorePlayersFixed: Started the '{(___privateLobby ? "private" : "public")}' lobby.");
 
                 return false;
             }
 
-            static async Task<bool> HostLobbyInternal(bool _open)
+            static void HostLobbyInternal(bool _open, ref bool privateLobby)
             {
                 Debug.Log("Steam: Hosting lobby...");
-                Lobby? lobby = await SteamMatchmaking.CreateLobbyAsync(configMaxPlayers.Value);
-
+                Lobby? lobby = SteamMatchmaking.CreateLobbyAsync(6).GetAwaiter().GetResult();
                 if (!lobby.HasValue)
                 {
                     Debug.LogError("Lobby created but not correctly instantiated.");
-                    return true;
                 }
                 else if (_open)
                 {
                     lobby.Value.SetPublic();
                     lobby.Value.SetJoinable(b: false);
-                    return false;
+                    privateLobby = false;
                 }
                 else
                 {
                     lobby.Value.SetPrivate();
                     lobby.Value.SetFriendsOnly();
                     lobby.Value.SetJoinable(b: false);
-                    return true;
+                    privateLobby = true;
                 }
             }
         }
