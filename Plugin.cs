@@ -46,12 +46,6 @@
         {
             static bool Prefix(ref string ___RoomName)
             {
-                if(string.IsNullOrEmpty(___RoomName))
-                {
-                    mls.LogError("RoomName is null or empty, using previous method!");
-                    return true;
-                }
-                
                 if(configMaxPlayers.Value == 0)
                 {
                     mls.LogError("The MaxPlayers config is null or empty, using previous method!");
@@ -60,10 +54,13 @@
 
                 if(NetworkConnect.instance != null)
                 {
+                    Debug.Log("Trying to join room: " + ___RoomName);
+                    
                     PhotonNetwork.JoinOrCreateRoom(___RoomName, new RoomOptions
                     {
-                        MaxPlayers = configMaxPlayers.Value
-                    }, TypedLobby.Default, null);
+                        MaxPlayers = configMaxPlayers.Value,
+                        IsVisible = false
+                    }, TypedLobby.Default);
 
                     return false;
                 }
@@ -78,13 +75,13 @@
         [HarmonyPatch(typeof(SteamManager), "HostLobby")]
         public class HostLobbyPatch
         {
-            static bool Prefix()
+            static bool Prefix(bool _open)
             {
-                HostLobbyAsync();
+                HostLobbyAsync(_open);
                 return false;
             }
 
-            static async void HostLobbyAsync()
+            static async void HostLobbyAsync(bool _open)
             {
                 Debug.Log("Steam: Hosting lobby...");
                 Lobby? lobby = await SteamMatchmaking.CreateLobbyAsync(configMaxPlayers.Value);
@@ -92,11 +89,20 @@
                 if (!lobby.HasValue)
                 {
                     Debug.LogError("Lobby created but not correctly instantiated.");
-                    return;
                 }
-
-                lobby.Value.SetPublic();
-                lobby.Value.SetJoinable(b: false);
+                else if (_open)
+                {
+                    lobby.Value.SetPublic();
+                    lobby.Value.SetJoinable(b: false);
+                    privateLobby = false;
+                }
+                else
+                {
+                    lobby.Value.SetPrivate();
+                    lobby.Value.SetFriendsOnly();
+                    lobby.Value.SetJoinable(b: false);
+                    privateLobby = true;
+                }
             }
         }
     }
