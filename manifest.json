@@ -4,6 +4,6 @@
     "website_url": "https://github.com/FeroxFoxxo/MorePlayersFixed",
     "description": "Allows you to decrease or increase the max player cap.",
     "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100",
+        "BepInEx-BepInExPack-5.4.2100"
     ]
 }
