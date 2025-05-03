@@ -1,8 +1,15 @@
 # MorePlayers
-A R.E.P.O. mod that allows you to decrease or increase the max player cap.
-# Important note
-I am no longer working on this mod, so I won't be updating it anytime soon.
 
-All of the code here is 100% ok to take, especially if you want to create a better version of MorePlayers.
-# How to install
-It's recommended to install this mod with a mod manager like Gale or Thunderstore Mod Manager, follow the instructions [here](https://thunderstore.io/c/repo/p/zelofi/MorePlayers/).
+Are you tired of not being able to change the max player count in R.E.P.O.? Well BOY do I have something for you!
+
+- MorePlayers is a mod for R.E.P.O. that allows you to decrease or increase the max player cap.
+
+## How do you change the max players cap?
+
+Easy! Go to your installation folder for R.E.P.O. (Right click on R.E.P.O. on Steam -> Manage -> Browse local files), go to BepInEx -> config -> zelofi.MorePlayers.cfg, then adjust the "MaxPlayers" value!
+
+- ❔ If you have a mod manager like Gale, you can change the .cfg settings in the launcher itself!
+- ⚠️ In order for the .cfg file to appear, you must launch the game after installing the mod!
+- ⚠️ If you manage to, setting the max player count to an insane number (Like 100 let's say) and filling the entire server with players WILL cause some issues, PUN is not exactly super stable when it comes to having a high number of players in a server.
+
+This mod was forked from: https://github.com/zelofi/MorePlayers - thank you zelofi for your original work!
