@@ -16,7 +16,7 @@
     {
         public const string modGUID = "feroxfoxxo.MorePlayersFixed";
         public const string modName = "MorePlayersFixed";
-        public const string modVersion = "1.0.2";
+        public const string modVersion = "1.0.3";
 
         private readonly Harmony harmony = new(modGUID);
 
