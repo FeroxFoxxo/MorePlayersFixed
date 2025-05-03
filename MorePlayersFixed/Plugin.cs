@@ -10,9 +10,6 @@
     using Steamworks;
     using UnityEngine;
     using ExitGames.Client.Photon;
-    using System.Threading.Tasks;
-    using System.Reflection;
-    using System;
 
     [BepInPlugin(modGUID, modName, modVersion)]
     public class Plugin : BaseUnityPlugin
