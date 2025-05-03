@@ -1,4 +1,4 @@
-# More Players Fixed
+# MorePlayersFixed
 
 This fork was primarily made as the original mod's author has mentioned he will not be maintaining it anymore.
 
