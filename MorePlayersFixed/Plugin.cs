@@ -21,7 +21,7 @@
         public const string modName = "MorePlayersFixed";
         public const string modVersion = "1.0.0";
 
-        private readonly Harmony harmony = new Harmony(modGUID);
+        private readonly Harmony harmony = new(modGUID);
 
         public static ConfigEntry<int> configMaxPlayers;
 
