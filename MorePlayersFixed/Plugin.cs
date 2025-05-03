@@ -111,7 +111,7 @@
             static void HostLobbyInternal(bool _open, ref bool privateLobby)
             {
                 Debug.Log("Steam: Hosting lobby...");
-                Lobby? lobby = SteamMatchmaking.CreateLobbyAsync(6).GetAwaiter().GetResult();
+                Lobby? lobby = SteamMatchmaking.CreateLobbyAsync(configMaxPlayers.Value).GetAwaiter().GetResult();
                 if (!lobby.HasValue)
                 {
                     Debug.LogError("Lobby created but not correctly instantiated.");
