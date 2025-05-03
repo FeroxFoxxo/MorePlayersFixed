@@ -1,4 +1,7 @@
 # More Players Fixed
+
+This fork was primarily made as the original mod's author has mentioned he will not be maintaining it anymore.
+
 [![GitHub](https://img.shields.io/badge/GitHub-MorePlayersFixed-brightgreen?style=for-the-badge&logo=GitHub)](https://github.com/FeroxFoxxo/MorePlayersFixed)
 [![Thunderstore Version](https://img.shields.io/thunderstore/v/feroxfoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/feroxfoxxo/MorePlayersFixed)
 [![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/feroxfoxxo/MorePlayersFixed?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/repo/p/feroxfoxxo/MorePlayersFixed)
