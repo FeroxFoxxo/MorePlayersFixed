@@ -1,4 +1,4 @@
-﻿namespace MorePlayers
+﻿namespace MorePlayersFixed
 {
     using BepInEx;
     using BepInEx.Configuration;
@@ -9,7 +9,10 @@
     using Steamworks.Data;
     using Steamworks;
     using UnityEngine;
+    using ExitGames.Client.Photon;
     using System.Threading.Tasks;
+    using System.Reflection;
+    using System;
 
     [BepInPlugin(modGUID, modName, modVersion)]
     public class Plugin : BaseUnityPlugin
@@ -31,9 +34,9 @@
 
             configMaxPlayers = Config.Bind
             (
-                "General", 
-                "MaxPlayersFixed", 
-                10, 
+                "General",
+                "MaxPlayersFixed",
+                10,
                 "The max amount of players allowed in a server"
             );
 
@@ -46,56 +49,84 @@
         {
             static bool Prefix(ref string ___RoomName)
             {
-                if(string.IsNullOrEmpty(___RoomName))
+                if (string.IsNullOrEmpty(___RoomName))
                 {
                     mls.LogError("RoomName is null or empty, using previous method!");
                     return true;
                 }
-                
-                if(configMaxPlayers.Value == 0)
+
+                if (configMaxPlayers.Value == 0)
                 {
                     mls.LogError("The MaxPlayers config is null or empty, using previous method!");
                     return true;
                 }
 
-                if(NetworkConnect.instance == null)
-                {
-                    mls.LogError("NetworkConnect instance is null, using previous method!");
-                    return true;
-                }
+                TryJoiningRoomInternal(ref ___RoomName);
+                return false;
+            }
 
+            static void TryJoiningRoomInternal(ref string ___RoomName)
+            {
                 Debug.Log("Trying to join room: " + ___RoomName);
-                
-                Hashtable hashtable = new Hashtable();
-                hashtable.Add("PASSWORD", DataDirector.instance.networkPassword);
+
+                Hashtable hashtable = new()
+                {
+                    { "PASSWORD", GetNetworkPassword() }
+                };
+
                 PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
-                
-                RoomOptions roomOptions = new RoomOptions
+
+                RoomOptions roomOptions = new()
                 {
                     MaxPlayers = configMaxPlayers.Value,
                     IsVisible = false
                 };
-                
-                Hashtable hashtable2 = new Hashtable();
-                hashtable2.Add("PASSWORD", DataDirector.instance.networkPassword);
+
+                Hashtable hashtable2 = new()
+                {
+                    { "PASSWORD", GetNetworkPassword() }
+                };
+
                 roomOptions.CustomRoomProperties = hashtable2;
-                
+
                 PhotonNetwork.JoinOrCreateRoom(___RoomName, roomOptions, TypedLobby.Default);
-                    
-                return false;
+            }
+
+            static string GetNetworkPassword()
+            {
+                DataDirector instance = DataDirector.instance;
+                const string fieldName = "networkPassword";
+
+                Type type = instance.GetType();
+
+                FieldInfo fieldInfo = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (fieldInfo != null)
+                {
+                    return (string)fieldInfo.GetValue(instance);
+                }
+
+                throw new MissingMemberException("Could not find internal member 'networkPassword'");
             }
         }
 
         [HarmonyPatch(typeof(SteamManager), "HostLobby")]
         public class HostLobbyPatch
         {
-            static bool Prefix(bool _open)
+            static bool Prefix(ref bool ___privateLobby, bool _open)
             {
-                HostLobbyAsync(_open);
+                if (configMaxPlayers.Value == 0)
+                {
+                    mls.LogError("The MaxPlayers config is null or empty, using previous method!");
+                    return true;
+                }
+
+                ___privateLobby = HostLobbyInternal(_open).GetAwaiter().GetResult();
+
                 return false;
             }
 
-            static async void HostLobbyAsync(bool _open)
+            static async Task<bool> HostLobbyInternal(bool _open)
             {
                 Debug.Log("Steam: Hosting lobby...");
                 Lobby? lobby = await SteamMatchmaking.CreateLobbyAsync(configMaxPlayers.Value);
@@ -103,19 +134,20 @@
                 if (!lobby.HasValue)
                 {
                     Debug.LogError("Lobby created but not correctly instantiated.");
+                    return true;
                 }
                 else if (_open)
                 {
                     lobby.Value.SetPublic();
                     lobby.Value.SetJoinable(b: false);
-                    privateLobby = false;
+                    return false;
                 }
                 else
                 {
                     lobby.Value.SetPrivate();
                     lobby.Value.SetFriendsOnly();
                     lobby.Value.SetJoinable(b: false);
-                    privateLobby = true;
+                    return true;
                 }
             }
         }
