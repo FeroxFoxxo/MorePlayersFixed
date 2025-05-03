@@ -1,5 +1,7 @@
 ## This mod fixes issues with the REPO Beta introduced by the changes to matchmaking.
 
+If you want to help with this mod at all - especially **balancing the game** as player count scales - please feel free to raise an MR!
+
 # MorePlayersFixed
 
 Are you tired of not being able to change the max player count in R.E.P.O.? Well BOY do I have something for you!
