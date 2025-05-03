@@ -14,9 +14,9 @@
     [BepInPlugin(modGUID, modName, modVersion)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string modGUID = "zelofi.MorePlayers";
-        public const string modName = "MorePlayers";
-        public const string modVersion = "1.0.1";
+        public const string modGUID = "feroxfoxxo.MorePlayersFixed";
+        public const string modName = "MorePlayersFixed";
+        public const string modVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -32,7 +32,7 @@
             configMaxPlayers = Config.Bind
             (
                 "General", 
-                "MaxPlayers", 
+                "MaxPlayersFixed", 
                 10, 
                 "The max amount of players allowed in a server"
             );
