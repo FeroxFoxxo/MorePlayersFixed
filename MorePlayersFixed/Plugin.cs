@@ -62,6 +62,9 @@
                 }
 
                 TryJoiningRoomInternal(ref ___RoomName);
+
+                Debug.Log($"MorePlayersFixed: Joined a lobby that has a maximum of {configMaxPlayers.Value} players.");
+
                 return false;
             }
 
@@ -122,6 +125,8 @@
                 }
 
                 ___privateLobby = HostLobbyInternal(_open).GetAwaiter().GetResult();
+
+                Debug.Log($"MorePlayersFixed: Hosting {(___privateLobby ? "private" : "public")} lobby for a maximum of {configMaxPlayers.Value} players.");
 
                 return false;
             }
